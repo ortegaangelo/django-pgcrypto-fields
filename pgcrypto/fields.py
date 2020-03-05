@@ -77,7 +77,7 @@ class EncryptedFile(BytesIO):
 class FileEncryptionMixin(object):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.key = None  # todo: perhaps default key?
+        self.key = None
 
     def pre_save(self, model_instance, add):
         """Save the original_value."""
@@ -88,10 +88,7 @@ class FileEncryptionMixin(object):
             cursor.execute("select key from key_store where id = %s::text", (key_id,))
             row = cursor.fetchone()
             if row is None:
-                self.key = Encryption.generate_key()
-                r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0)
-                r.set(str(key_id), self.key, nx=True)
-                self.key = r.get(str(key_id)).decode('utf-8')
+                self.key = key_id
             else:
                 self.key = row[0]
 
@@ -106,9 +103,7 @@ class FileEncryptionMixin(object):
                 cursor.execute("select key from key_store where id = %s::text", (key_id,))
                 row = cursor.fetchone()
                 if row is None:
-                    self.key = Encryption.generate_key()
-                    r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0)
-                    r.set(str(key_id), self.key, nx=True)
+                    self.key = key_id
                 else:
                     self.key = row[0]
 
