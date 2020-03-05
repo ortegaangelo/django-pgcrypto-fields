@@ -1,6 +1,5 @@
 from io import BytesIO
 
-import redis
 from django.db import models
 from django.db.models.fields.files import (
     FieldFile,
@@ -17,7 +16,7 @@ from pgcrypto.mixins import (
     DecimalPGPFieldMixin,
     PGPSymmetricKeyFieldMixin,
     Encryption)
-from .constants import FETCH_URL_NAME, REDIS_HOST, REDIS_PORT
+from .constants import FETCH_URL_NAME
 from .crypt import Cryptographer
 
 
@@ -88,7 +87,7 @@ class FileEncryptionMixin(object):
             cursor.execute("select key from key_store where id = %s::text", (key_id,))
             row = cursor.fetchone()
             if row is None:
-                self.key = key_id
+                self.key = str(key_id)
             else:
                 self.key = row[0]
 
@@ -103,7 +102,7 @@ class FileEncryptionMixin(object):
                 cursor.execute("select key from key_store where id = %s::text", (key_id,))
                 row = cursor.fetchone()
                 if row is None:
-                    self.key = key_id
+                    self.key = str(key_id)
                 else:
                     self.key = row[0]
 
