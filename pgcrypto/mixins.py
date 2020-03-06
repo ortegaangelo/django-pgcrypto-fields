@@ -140,7 +140,9 @@ class Encryption:
     @classmethod
     def generate_key(cls):
         return b64encode(urandom(32)).decode('utf-8')
-
+    @classmethod
+    def generate_key(cls, key):
+        return b64encode(key).decode('utf-8')
 
 class PGPSymmetricKeyFieldMixin(PGPMixin):
     """PGP symmetric key encrypted field mixin for postgres."""
