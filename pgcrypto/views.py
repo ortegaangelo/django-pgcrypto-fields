@@ -8,7 +8,7 @@ from django.http import Http404, HttpResponse
 from django.views.generic import View
 
 from .crypt import Cryptographer
-
+from pgcrypto.mixins import (Encryption)
 
 class FetchView(View):
     """
@@ -73,7 +73,7 @@ class FetchView(View):
             cursor.execute("select key from key_store where id = %s", (uuid,))
             row = cursor.fetchone()
             if row is None:
-                key = str(uuid)
+                key = Encryption.generate_key(str(uuid))
             else:
                 key = row[0].encode('utf-8')
 
