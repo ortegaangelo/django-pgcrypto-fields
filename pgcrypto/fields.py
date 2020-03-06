@@ -87,7 +87,7 @@ class FileEncryptionMixin(object):
             cursor.execute("select key from key_store where id = %s::text", (key_id,))
             row = cursor.fetchone()
             if row is None:
-                self.key = str(key_id)
+                self.key = Encryption.generate_key(str(key_id))
             else:
                 self.key = row[0]
 
@@ -102,7 +102,7 @@ class FileEncryptionMixin(object):
                 cursor.execute("select key from key_store where id = %s::text", (key_id,))
                 row = cursor.fetchone()
                 if row is None:
-                    self.key = str(key_id)
+                    self.key = Encryption.generate_key(str(key_id))
                 else:
                     self.key = row[0]
 
