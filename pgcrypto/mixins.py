@@ -39,47 +39,6 @@ class DecryptedCol(Col):
         sql = self.target.get_decrypt_sql(connection) % (sql, self.alias, self.target.get_cast_sql())
         return sql, params
 
-
-# class HashMixin:
-#     """Keyed hash mixin.
-#
-#     `HashMixin` uses 'pgcrypto' to encrypt data in a postgres database.
-#     """
-#     encrypt_sql = None  # Set in implementation class
-#
-#     def __init__(self, original=None, *args, **kwargs):
-#         """Tells the init the original attr."""
-#         self.original = original
-#
-#         super(HashMixin, self).__init__(*args, **kwargs)
-#
-#     def pre_save(self, model_instance, add):
-#         """Save the original_value."""
-#         if self.original:
-#             original_value = getattr(model_instance, self.original)
-#             setattr(model_instance, self.attname, original_value)
-#
-#         return super(HashMixin, self).pre_save(model_instance, add)
-#
-#     def get_placeholder(self, value=None, compiler=None, connection=None):
-#         """
-#         Tell postgres to encrypt this field with a hashing function.
-#
-#         The `value` string is checked to determine if we need to hash or keep
-#         the current value.
-#
-#         `compiler` and `connection` is ignored here as we don't need custom operators.
-#         """
-#         if value is None or value.startswith('\\x'):
-#             return '%s'
-#
-#         return self.get_encrypt_sql(connection)
-#
-#     def get_encrypt_sql(self, connection):
-#         """Get encrypt sql. This may be overidden by some implementations."""
-#         return self.encrypt_sql
-
-
 class PGPMixin:
     """PGP encryption for field's value.
 
@@ -142,7 +101,9 @@ class Encryption:
         return b64encode(urandom(32)).decode('utf-8')
     @classmethod
     def generate_key(cls, key):
-        return b64encode(key).decode('utf-8')
+        b = bytearray()
+        b.extend(map(ord, key))
+        return b64encode(b).decode('utf-8')
 
 class PGPSymmetricKeyFieldMixin(PGPMixin):
     """PGP symmetric key encrypted field mixin for postgres."""
