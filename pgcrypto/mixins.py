@@ -100,7 +100,7 @@ class Encryption:
     def generate_key(cls):
         return b64encode(urandom(32)).decode('utf-8')
     @classmethod
-    def generate_key(cls, key):
+    def generate_from_str(cls, key):
         b = bytearray()
         b.extend(map(ord, key))
         return b64encode(b).decode('utf-8')
@@ -118,22 +118,6 @@ class PGPSymmetricKeyFieldMixin(PGPMixin):
     def pre_save(self, model_instance, add):
         """Save the original_value."""
         key_id = getattr(model_instance, "pk")
-
-        # from django.db import connection
-        # with connection.cursor() as cursor:
-        #     print("trying to fetch key for %s", (key_id,))
-        #     cursor.execute("select key from key_store where id = %s::text", (key_id,))
-        #     row = cursor.fetchone()
-        #     if row is None:
-        #         print("no key found for %s. Creating new one", (key_id,))
-        #         key = Encryption.generate_key()
-        #         self.keys[key_id] = key
-        #         r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=0)
-        #         r.set(str(key_id), key, nx=True)
-        #     else:
-        #         print("Loading key from %s", (key_id,))
-        #         self.keys[key_id] = row[0]
-
         return super(PGPSymmetricKeyFieldMixin, self).pre_save(model_instance, add)
 
     def get_placeholder(self, value, compiler, connection):
