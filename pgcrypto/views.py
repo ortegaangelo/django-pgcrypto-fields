@@ -73,7 +73,7 @@ class FetchView(View):
             cursor.execute("select key from key_store where id = %s", (uuid,))
             row = cursor.fetchone()
             if row is None:
-                raise Http404
+                key = str(uuid)
             else:
                 key = row[0].encode('utf-8')
 
